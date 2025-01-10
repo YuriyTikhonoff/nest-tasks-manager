@@ -1,8 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { Task, TaskStatus } from './task.model';
-import { v4 as uuid } from 'uuid';
-import { CreateTaskDto } from './dto/create-task.dto';
-import { GetTasksFilterDto } from './dto/get-tasks-filter.dto';
+import { Injectable, NotFoundException } from "@nestjs/common";
+import { Task, TaskStatus } from "./task.model";
+import { v4 as uuid } from "uuid";
+import { CreateTaskDto } from "./dto/create-task.dto";
+import { GetTasksFilterDto } from "./dto/get-tasks-filter.dto";
 
 @Injectable()
 export class TasksService {
@@ -49,7 +49,7 @@ export class TasksService {
 
     return this.tasks;
   }
-  public updateStatus(taskId: Task['id'], newStatus: TaskStatus) {
+  public updateStatus(taskId: Task["id"], newStatus: TaskStatus) {
     let updatedTask = this.getTaskById(taskId);
     this.tasks = this.tasks.map((task) => {
       if (task.id !== taskId) return task;
