@@ -9,7 +9,7 @@ import {
   Query,
 } from "@nestjs/common";
 import { TasksService } from "./tasks.service";
-import { Task } from "./task.model";
+import { Task } from "./task.entity";
 import { CreateTaskDto } from "./dto/create-task.dto";
 import { GetTasksFilterDto } from "./dto/get-tasks-filter.dto";
 import { UpdateTaskStatusDto } from "./dto/update-task-status.dto";
@@ -31,7 +31,7 @@ export class TasksController {
   }
 
   @Get("/:id")
-  getTaskById(@Param() params: any): Task {
+  getTaskById(@Param() params: any): Promise<Task> {
     return this.taskService.getTaskById(params.id);
   }
 
