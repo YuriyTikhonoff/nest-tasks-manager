@@ -20,13 +20,13 @@ export class TasksController {
 
   @Get()
   getAllTasks(@Query() filters: GetTasksFilterDto) {
-    if (Object.keys(filters).length)
-      return this.taskService.getTaskWithFilters(filters);
+    // if (Object.keys(filters).length)
+    //   return this.taskService.getTaskWithFilters(filters);
     return this.taskService.getAllTasks();
   }
 
   @Post()
-  createTask(@Body() createTaskDto: CreateTaskDto): Task {
+  createTask(@Body() createTaskDto: CreateTaskDto): Promise<Task> {
     return this.taskService.createTask(createTaskDto);
   }
 
