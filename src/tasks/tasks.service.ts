@@ -63,12 +63,6 @@ export class TasksService {
     return this.tasks;
   }
   public updateStatus(taskId: Task["id"], newStatus: TaskStatus) {
-    //let updatedTask = this.getTaskById(taskId);
-    // this.tasks = this.tasks.map((task) => {
-    //   if (task.id !== taskId) return task;
-    //   updatedTask = { ...task, status: newStatus };
-    //   return updatedTask;
-    // });
-    //return updatedTask;
+    return undefined;
   }
 }
