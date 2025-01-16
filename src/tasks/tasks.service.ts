@@ -4,7 +4,7 @@ import { CreateTaskDto } from "./dto/create-task.dto";
 import { GetTasksFilterDto } from "./dto/get-tasks-filter.dto";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Task } from "./task.entity";
-import { Repository } from "typeorm";
+import { ILike, Repository } from "typeorm";
 
 @Injectable()
 export class TasksService {
@@ -17,18 +17,16 @@ export class TasksService {
     const tasks = await this.taskRepository.find();
     return tasks;
   }
-  public getTaskWithFilters(filterDto: GetTasksFilterDto) {
-    //const { status, search } = filterDto;
-    // const allTasks = this.getAllTasks();
-    // const filteredTasks = allTasks
-    //   .filter((task) => (status ? task.status === status : true))
-    //   .filter((task) =>
-    //     search
-    //       ? task.title.toLowerCase().includes(search.toLowerCase()) ||
-    //         task.description.toLowerCase().includes(search.toLowerCase())
-    //       : true,
-    //   );
-    return; //filteredTasks;
+  public async getTaskWithFilters(filterDto: GetTasksFilterDto) {
+    const { status, search } = filterDto;
+    const tasks = await this.taskRepository.find({
+      where: [
+        { status: status },
+        { title: ILike(`%${search}%`) },
+        { description: ILike(`%${search}%`) },
+      ],
+    });
+    return tasks;
   }
   public async createTask(createTaskDto: CreateTaskDto): Promise<Task> {
     const { title, description } = createTaskDto;
