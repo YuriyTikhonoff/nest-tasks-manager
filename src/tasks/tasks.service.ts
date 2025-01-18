@@ -12,7 +12,6 @@ export class TasksService {
     @InjectRepository(Task)
     private readonly taskRepository: Repository<Task>,
   ) {}
-  private tasks: Task[] = [];
   public async getAllTasks(): Promise<Task[]> {
     const tasks = await this.taskRepository.find();
     return tasks;
@@ -49,11 +48,11 @@ export class TasksService {
     return foundTask;
   }
 
-  public deleteTask(id: string) {
-    this.getTaskById(id);
-    this.tasks = this.tasks.filter((task) => task.id !== id);
-
-    return this.tasks;
+  public async deleteTask(id: string): Promise<void> {
+    const result = await this.taskRepository.delete({ id });
+    if (result.affected === 0) {
+      throw new NotFoundException(`Task with ID ${id} not found`);
+    }
   }
   public async updateStatus(taskId: Task["id"], newStatus: TaskStatus) {
     await this.taskRepository.update(
@@ -63,6 +62,12 @@ export class TasksService {
       },
     );
     const updatedTask = await this.getTaskById(taskId);
+
+    //** Alternative updating
+    // const updatedTask = await this.getTaskById(taskId);
+    // updatedTask.status = newStatus;
+    // await this.taskRepository.save(updatedTask);
+    //  */
     return updatedTask;
   }
 }
