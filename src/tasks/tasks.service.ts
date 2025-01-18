@@ -48,19 +48,21 @@ export class TasksService {
 
     return foundTask;
   }
-  // public getTaskById(id: string) {
-  //   const foundTask = this.tasks.find((task) => task.id === id);
-  //   if (!foundTask)
-  //     throw new NotFoundException(`The task with id ${id} is not found`);
-  //   return foundTask;
-  // }
+
   public deleteTask(id: string) {
     this.getTaskById(id);
     this.tasks = this.tasks.filter((task) => task.id !== id);
 
     return this.tasks;
   }
-  public updateStatus(taskId: Task["id"], newStatus: TaskStatus) {
-    return undefined;
+  public async updateStatus(taskId: Task["id"], newStatus: TaskStatus) {
+    await this.taskRepository.update(
+      { id: taskId },
+      {
+        status: newStatus,
+      },
+    );
+    const updatedTask = await this.getTaskById(taskId);
+    return updatedTask;
   }
 }
