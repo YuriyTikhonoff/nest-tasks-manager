@@ -5,6 +5,7 @@ import { GetTasksFilterDto } from "./dto/get-tasks-filter.dto";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Task } from "./task.entity";
 import { ILike, Repository } from "typeorm";
+import { TASK_ENTITY_NAME } from "./constants";
 
 @Injectable()
 export class TasksService {
@@ -12,8 +13,28 @@ export class TasksService {
     @InjectRepository(Task)
     private readonly taskRepository: Repository<Task>,
   ) {}
-  public async getAllTasks(): Promise<Task[]> {
-    const tasks = await this.taskRepository.find();
+  public async getAllTasks(filterDto: GetTasksFilterDto): Promise<Task[]> {
+    const { status, search } = filterDto;
+    const query = this.taskRepository.createQueryBuilder(TASK_ENTITY_NAME);
+
+    //** Alternative approach
+    //const tasks = await this.taskRepository.find();
+    //*
+    console.log("search ", search);
+
+    if (status) {
+      query.andWhere("task.status = :status", { status });
+    }
+    if (search) {
+      query.andWhere(
+        "task.title ILIKE :search OR task.description ILIKE :search",
+        { search: `%${search}%` },
+      );
+      //** We can use LOWER and LIKE operators instead of ILIKE because the last one is only applicable to PostrgeSQL
+      //"LOWER(task.title) LIKE LOWER(:search) OR LOWER(task.description) LIKE LOWER(:search)",
+      //*
+    }
+    const tasks = query.getMany();
     return tasks;
   }
   public async getTaskWithFilters(filterDto: GetTasksFilterDto) {
