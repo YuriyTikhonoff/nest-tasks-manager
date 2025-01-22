@@ -20,8 +20,6 @@ export class TasksService {
     //** Alternative approach
     //const tasks = await this.taskRepository.find();
     //*
-    console.log("search ", search);
-
     if (status) {
       query.andWhere("task.status = :status", { status });
     }
