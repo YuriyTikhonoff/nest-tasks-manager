@@ -5,7 +5,7 @@ export class User {
   @PrimaryColumn("uuid")
   id: string;
   @Column()
-  username: string;
+  userName: string;
   @Column()
   password: string;
 }
