@@ -11,11 +11,11 @@ export class AuthService {
     private readonly userRepository: Repository<User>,
   ) {}
 
-  async createUser(authCredentials: AuthCredentialsDto): Promise<void> {
-    const { userName, password } = authCredentials;
+  async signUp(authCredentials: AuthCredentialsDto): Promise<void> {
+    const { username, password } = authCredentials;
 
     const user = this.userRepository.create({
-      userName,
+      username,
       password,
     });
 
