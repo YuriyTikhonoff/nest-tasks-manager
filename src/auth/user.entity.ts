@@ -4,8 +4,10 @@ import { Column, Entity, PrimaryColumn } from "typeorm";
 export class User {
   @PrimaryColumn("uuid")
   id: string;
+
   @Column()
   username: string;
+
   @Column()
   password: string;
 }
