@@ -9,6 +9,8 @@ import { Repository } from "typeorm";
 import { AuthCredentialsDto } from "./dto/auth-credentials.dto";
 import { DB_ERROR_STATUS_CODES } from "src/constants";
 
+import * as bcrypt from "bcrypt";
+
 @Injectable()
 export class AuthService {
   constructor(
@@ -19,10 +21,14 @@ export class AuthService {
   async signUp(authCredentials: AuthCredentialsDto): Promise<void> {
     const { username, password } = authCredentials;
 
+    const salt = await bcrypt.genSalt();
+    const hashedPassword = await bcrypt.hash(password, salt);
+
     const user = this.userRepository.create({
       username,
-      password,
+      password: hashedPassword,
     });
+
     try {
       await this.userRepository.save(user);
     } catch (error) {
