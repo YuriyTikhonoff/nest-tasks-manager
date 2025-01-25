@@ -1,8 +1,13 @@
-import { Injectable } from "@nestjs/common";
+import {
+  ConflictException,
+  Injectable,
+  InternalServerErrorException,
+} from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { User } from "./user.entity";
 import { Repository } from "typeorm";
 import { AuthCredentialsDto } from "./dto/auth-credentials.dto";
+import { DB_ERROR_STATUS_CODES } from "src/constants";
 
 @Injectable()
 export class AuthService {
@@ -18,7 +23,14 @@ export class AuthService {
       username,
       password,
     });
-
-    await this.userRepository.save(user);
+    try {
+      await this.userRepository.save(user);
+    } catch (error) {
+      if (error.code === DB_ERROR_STATUS_CODES.DUPLICATE_VALUE) {
+        throw new ConflictException("Username already exists");
+      } else {
+        throw new InternalServerErrorException();
+      }
+    }
   }
 }
