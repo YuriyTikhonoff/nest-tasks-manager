@@ -11,12 +11,15 @@ import { AuthCredentialsDto } from "./dto/auth-credentials.dto";
 import { DB_ERROR_STATUS_CODES } from "src/constants";
 
 import * as bcrypt from "bcrypt";
+import { JwtService } from "@nestjs/jwt";
+import { IAcessToken, IJwtPayload } from "./types";
 
 @Injectable()
 export class AuthService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    private readonly jwtService: JwtService,
   ) {}
 
   async signUp(authCredentials: AuthCredentialsDto): Promise<void> {
@@ -41,11 +44,15 @@ export class AuthService {
     }
   }
 
-  async signIn(authCredentials: AuthCredentialsDto): Promise<string> {
+  async signIn(authCredentials: AuthCredentialsDto): Promise<IAcessToken> {
     const { username, password } = authCredentials;
     const user = await this.userRepository.findOne({ where: { username } });
     if (user && (await bcrypt.compare(password, user.password))) {
-      return "sucess";
+      const payload: IJwtPayload = { username };
+
+      const accessToken = this.jwtService.sign(payload);
+
+      return { accessToken };
     } else {
       throw new UnauthorizedException("Wrong credentials");
     }
