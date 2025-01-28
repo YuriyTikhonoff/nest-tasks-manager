@@ -24,13 +24,16 @@ export class TasksController {
   constructor(private readonly taskService: TasksService) {}
 
   @Get()
-  getAllTasks(@Query() filters: GetTasksFilterDto) {
+  getAllTasks(
+    @Query() filters: GetTasksFilterDto,
+    @GetUser() user: User,
+  ): Promise<Task[]> {
     //** Alternative approach
     // if (Object.keys(filters).length)
     //   return this.taskService.getTaskWithFilters(filters);
     //*
 
-    return this.taskService.getAllTasks(filters);
+    return this.taskService.getAllTasks(filters, user);
   }
 
   @Post()

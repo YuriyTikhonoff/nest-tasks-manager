@@ -14,9 +14,13 @@ export class TasksService {
     @InjectRepository(Task)
     private readonly taskRepository: Repository<Task>,
   ) {}
-  public async getAllTasks(filterDto: GetTasksFilterDto): Promise<Task[]> {
+  public async getAllTasks(
+    filterDto: GetTasksFilterDto,
+    user: User,
+  ): Promise<Task[]> {
     const { status, search } = filterDto;
     const query = this.taskRepository.createQueryBuilder(TASK_ENTITY_NAME);
+    query.where({ user });
 
     //** Alternative approach
     //const tasks = await this.taskRepository.find();
@@ -26,7 +30,7 @@ export class TasksService {
     }
     if (search) {
       query.andWhere(
-        "task.title ILIKE :search OR task.description ILIKE :search",
+        "(task.title ILIKE :search OR task.description ILIKE :search)",
         { search: `%${search}%` },
       );
       //** We can use LOWER and LIKE operators instead of ILIKE because the last one is only applicable to PostrgeSQL
