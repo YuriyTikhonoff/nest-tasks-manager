@@ -68,28 +68,34 @@ export class TasksService {
 
     return task;
   }
-  async getTaskById(id: string): Promise<Task> {
-    const foundTask = await this.taskRepository.findOneBy({ id });
+  async getTaskById(id: string, user: User): Promise<Task> {
+    const foundTask = await this.taskRepository.findOne({
+      where: { id, user },
+    });
     if (!foundTask)
       throw new NotFoundException(`The task with id ${id} is not found`);
 
     return foundTask;
   }
 
-  public async deleteTask(id: string): Promise<void> {
-    const result = await this.taskRepository.delete({ id });
+  public async deleteTask(id: string, user: User): Promise<void> {
+    const result = await this.taskRepository.delete({ id, user });
     if (result.affected === 0) {
       throw new NotFoundException(`Task with ID ${id} not found`);
     }
   }
-  public async updateStatus(taskId: Task["id"], newStatus: TaskStatus) {
+  public async updateStatus(
+    taskId: Task["id"],
+    newStatus: TaskStatus,
+    user: User,
+  ): Promise<Task> {
     await this.taskRepository.update(
       { id: taskId },
       {
         status: newStatus,
       },
     );
-    const updatedTask = await this.getTaskById(taskId);
+    const updatedTask = await this.getTaskById(taskId, user);
 
     //** Alternative updating
     // const updatedTask = await this.getTaskById(taskId);
