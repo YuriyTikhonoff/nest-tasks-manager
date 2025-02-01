@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
+import { Injectable, Logger, NotFoundException } from "@nestjs/common";
 import { TaskStatus } from "./task.model";
 import { CreateTaskDto } from "./dto/create-task.dto";
 import { GetTasksFilterDto } from "./dto/get-tasks-filter.dto";
@@ -10,6 +10,7 @@ import { User } from "src/auth/user.entity";
 
 @Injectable()
 export class TasksService {
+  private readonly logger = new Logger("TasksService");
   constructor(
     @InjectRepository(Task)
     private readonly taskRepository: Repository<Task>,
@@ -37,8 +38,18 @@ export class TasksService {
       //"LOWER(task.title) LIKE LOWER(:search) OR LOWER(task.description) LIKE LOWER(:search)",
       //*
     }
-    const tasks = query.getMany();
-    return tasks;
+    try {
+      const tasks = await query.getMany();
+      return tasks;
+    } catch (error) {
+      this.logger.error(
+        `Failed to get tasks for user "${user.username}". Filters: ${JSON.stringify(
+          filterDto,
+        )}`,
+        error.stack,
+      );
+      throw new NotFoundException("Tasks not found");
+    }
   }
   public async getTaskWithFilters(filterDto: GetTasksFilterDto) {
     const { status, search } = filterDto;
