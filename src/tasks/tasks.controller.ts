@@ -8,6 +8,7 @@ import {
   Patch,
   Query,
   UseGuards,
+  Logger,
 } from "@nestjs/common";
 import { TasksService } from "./tasks.service";
 import { Task } from "./task.entity";
@@ -21,6 +22,7 @@ import { User } from "src/auth/user.entity";
 @Controller("/tasks")
 @UseGuards(AuthGuard())
 export class TasksController {
+  private readonly logger = new Logger("TasksController");
   constructor(private readonly taskService: TasksService) {}
 
   @Get()
@@ -32,7 +34,11 @@ export class TasksController {
     // if (Object.keys(filters).length)
     //   return this.taskService.getTaskWithFilters(filters);
     //*
-
+    this.logger.verbose(
+      `User "${user.username}" retrieving all tasks. Filters: ${JSON.stringify(
+        filters,
+      )}`,
+    );
     return this.taskService.getAllTasks(filters, user);
   }
 
@@ -41,6 +47,11 @@ export class TasksController {
     @Body() createTaskDto: CreateTaskDto,
     @GetUser() user: User,
   ): Promise<Task> {
+    this.logger.verbose(
+      `User "${user.username}" is creating the following task: ${JSON.stringify(
+        createTaskDto,
+      )}`,
+    );
     return this.taskService.createTask(createTaskDto, user);
   }
 
